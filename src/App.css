@@ -1,0 +1,549 @@
+
+
+/* Meera Guide: layout and look.
+   Class names match App.jsx. Colours come from the --accent, --sky-a and --sky-b
+   variables that App.jsx sets for each wonder. */
+
+.app,
+.app * {
+  box-sizing: border-box;
+}
+
+.app {
+  min-height: 100vh;
+  padding: 20px 28px 28px;
+  color: #2a211c;
+  font-family: 'Segoe UI', system-ui, -apple-system, Roboto, 'Helvetica Neue', Arial, sans-serif;
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--sky-a) 35%, #ffffff) 0%,
+    #fbf7f2 70%
+  );
+}
+
+/* ---------- Header and wonder picker ---------- */
+
+.app header h1 {
+  margin: 0;
+  font-size: 1.7rem;
+  line-height: 1.15;
+}
+
+.app header p {
+  margin: 4px 0 0;
+  color: #6b5e55;
+}
+
+/* The title and wonder buttons stay at the top of the window while the page scrolls. */
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  margin: -20px -28px 18px;
+  padding: 14px 28px 12px;
+  background: rgba(251, 247, 242, 0.92);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-bottom: 1px solid color-mix(in srgb, var(--accent) 18%, #e6dcd2);
+  box-shadow: 0 4px 14px rgba(60, 40, 20, 0.06);
+}
+
+.topbar .picker {
+  margin: 10px 0 0;
+}
+
+/* The hamburger button only appears on phones and narrow windows. */
+.menu-btn {
+  display: none;
+}
+
+.picker {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 16px 0 20px;
+}
+
+/* ---------- Buttons ---------- */
+
+.app button {
+  font: inherit;
+  padding: 8px 16px;
+  border: 1px solid #d9cfc6;
+  border-radius: 999px;
+  background: #ffffff;
+  color: #2a211c;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+
+.app button:hover:not(:disabled) {
+  border-color: var(--accent);
+}
+
+.app button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.app button.on {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #ffffff;
+}
+
+.app button.primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #ffffff;
+}
+
+.app button.quiet {
+  border-color: transparent;
+  background: transparent;
+  text-decoration: underline;
+}
+
+/* ---------- Main layout: tour on the left, Meera on the right ---------- */
+
+.app main {
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) minmax(340px, 1fr);
+  grid-template-rows: minmax(0, 1fr);
+  gap: 24px;
+  height: clamp(560px, calc(100vh - 200px), 820px);
+}
+
+/* ---------- Tour stage ---------- */
+
+.stage {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  padding: 24px 28px;
+  overflow: hidden;
+  border-radius: 22px;
+  color: #ffffff;
+  background: linear-gradient(160deg, var(--sky-a), var(--sky-b));
+}
+
+/* Photo background from TourBackground.jsx: fills the stage and moves slowly. */
+.bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.bg-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform-origin: center;
+  will-change: transform, opacity;
+  animation: bg-fade 1.2s ease both;
+}
+
+/* Four different slow pan-and-zoom paths; TourBackground picks one per photo. */
+.bg-img.v0 { animation: bg-fade 1.2s ease both, pan0 26s ease-in-out infinite alternate; }
+.bg-img.v1 { animation: bg-fade 1.2s ease both, pan1 28s ease-in-out infinite alternate; }
+.bg-img.v2 { animation: bg-fade 1.2s ease both, pan2 30s ease-in-out infinite alternate; }
+.bg-img.v3 { animation: bg-fade 1.2s ease both, pan3 27s ease-in-out infinite alternate; }
+
+@keyframes bg-fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes pan0 {
+  from { transform: scale(1.05) translate(0, 0); }
+  to { transform: scale(1.18) translate(-2%, -1.5%); }
+}
+@keyframes pan1 {
+  from { transform: scale(1.18) translate(2%, 1%); }
+  to { transform: scale(1.05) translate(0, 0); }
+}
+@keyframes pan2 {
+  from { transform: scale(1.08) translate(-2%, 1.5%); }
+  to { transform: scale(1.2) translate(1.5%, -1%); }
+}
+@keyframes pan3 {
+  from { transform: scale(1.2) translate(1.5%, -1.5%); }
+  to { transform: scale(1.06) translate(-1.5%, 1%); }
+}
+
+/* Dark fade so the white title and the card stay readable on any photo. */
+.bg-shade {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    180deg,
+    rgba(0, 0, 0, 0.45) 0%,
+    rgba(0, 0, 0, 0) 40%,
+    rgba(0, 0, 0, 0.15) 100%
+  );
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bg-img { animation: bg-fade 0.6s ease both !important; }
+}
+
+.stage .place,
+.stage h2,
+.stage .card {
+  position: relative;
+  z-index: 2;
+}
+
+.stage .place {
+  margin: 0;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.5);
+}
+
+.stage h2 {
+  margin: 4px 0 0;
+  font-size: clamp(2rem, 4.2vw, 3.2rem);
+  line-height: 1.1;
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.55);
+}
+
+.card {
+  margin-top: auto;
+  padding: 18px 22px;
+  border-radius: 18px;
+  color: #2a211c;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(6px);
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.18);
+}
+
+.card h3 {
+  margin: 0 0 6px;
+  color: var(--accent);
+  font-size: 1.2rem;
+}
+
+.card p {
+  margin: 0 0 14px;
+  font-size: 1.05rem;
+  line-height: 1.55;
+}
+
+.card .row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+}
+
+.card .row span {
+  color: #6b5e55;
+  font-size: 0.95rem;
+}
+
+/* ---------- Meera's panel ---------- */
+
+.guide {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-height: 0;
+  padding: 16px;
+  overflow: hidden;
+  border-radius: 22px;
+  background: #ffffff;
+  box-shadow: 0 4px 22px rgba(60, 40, 20, 0.1);
+}
+
+.presenter {
+  display: flex;
+  flex: 0 0 auto;
+  justify-content: center;
+  align-items: flex-start;
+  height: clamp(170px, 26vh, 250px);
+  overflow: hidden;
+  border-radius: 16px;
+  background: linear-gradient(180deg, color-mix(in srgb, var(--sky-a) 40%, #ffffff), #ffffff);
+  transition: box-shadow 0.25s;
+}
+
+/* The picture fills the box height and is anchored to the top, so her head is never cut off. */
+.presenter .face {
+  width: auto !important;
+  height: 100% !important;
+  aspect-ratio: 2 / 3;
+  object-fit: cover;
+  object-position: top center;
+  border-radius: 14px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
+}
+
+.presenter.speaking {
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 55%, transparent);
+}
+
+.presenter.listening {
+  box-shadow: 0 0 0 3px rgba(60, 160, 90, 0.55);
+  animation: breathe 1.8s ease-in-out infinite;
+}
+
+@keyframes breathe {
+  50% {
+    box-shadow: 0 0 0 7px rgba(60, 160, 90, 0.2);
+  }
+}
+
+.guide .name {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  font-weight: 700;
+}
+
+.badge {
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 14%, #ffffff);
+}
+
+.talk {
+  width: 100%;
+  font-weight: 600;
+}
+
+.talk.on {
+  background: #b3261e !important;
+  border-color: #b3261e !important;
+  color: #ffffff !important;
+}
+
+/* ---------- Chat ---------- */
+
+.log {
+  display: flex;
+  flex: 1 1 0;
+  flex-direction: column;
+  gap: 8px;
+  min-height: 120px;
+  padding: 4px 2px;
+  overflow-y: auto;
+}
+
+.log .hint {
+  margin: 0;
+  color: #8a7c72;
+  font-size: 0.92rem;
+}
+
+.log > * {
+  flex-shrink: 0;
+}
+
+.msg {
+  max-width: 88%;
+  margin: 0;
+  padding: 10px 14px;
+  border-radius: 14px;
+  font-size: 0.95rem;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+
+.msg.you {
+  align-self: flex-end;
+  color: #ffffff;
+  background: var(--accent);
+}
+
+.msg.guide {
+  align-self: flex-start;
+  background: #f3ece5;
+}
+
+.msg.error {
+  align-self: flex-start;
+  color: #8a1c14;
+  background: #fde7e5;
+}
+
+.app .msg .replay {
+  display: block;
+  margin-top: 6px;
+  padding: 2px 12px;
+  font-size: 0.78rem;
+  color: var(--accent);
+  border-color: var(--accent);
+  background: #ffffff;
+}
+
+.app .msg .replay:hover {
+  background: var(--accent);
+  color: #ffffff;
+}
+
+.ask {
+  display: flex;
+  flex: 0 0 auto;
+  gap: 8px;
+}
+
+.ask input {
+  flex: 1;
+  min-width: 0;
+  padding: 10px 16px;
+  font: inherit;
+  border: 1px solid #d9cfc6;
+  border-radius: 999px;
+  background: #ffffff;
+}
+
+.ask input:focus {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+/* ---------- Footer ---------- */
+
+.app footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 24px;
+  margin-top: 22px;
+  padding-top: 14px;
+  border-top: 1px solid color-mix(in srgb, var(--accent) 22%, #e6dcd2);
+  color: #6b5e55;
+  font-size: 0.85rem;
+}
+
+.app footer p {
+  margin: 0;
+}
+
+.app footer .brand {
+  font-weight: 700;
+  color: var(--accent);
+}
+
+/* ---------- Phones and narrow windows ---------- */
+
+@media (max-width: 899px) {
+  .app {
+    padding: 16px;
+  }
+
+  .topbar {
+    margin: -16px -16px 14px;
+    padding: 10px 16px;
+  }
+
+  .topbar-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .app header h1 {
+    font-size: 1.35rem;
+  }
+
+  .app header p {
+    display: none;
+  }
+
+  /* Hamburger button: shows the current wonder and three bars. */
+  .app .menu-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    max-width: 62%;
+    padding: 8px 12px;
+    border-radius: 12px;
+    font-weight: 600;
+  }
+
+  .menu-current {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 0.9rem;
+  }
+
+  .menu-btn .bars {
+    display: inline-flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .menu-btn .bars i {
+    display: block;
+    width: 20px;
+    height: 2px;
+    border-radius: 2px;
+    background: var(--accent);
+    transition: transform 0.2s, opacity 0.2s;
+  }
+
+  .menu-btn[aria-expanded='true'] .bars i:nth-child(1) {
+    transform: translateY(6px) rotate(45deg);
+  }
+  .menu-btn[aria-expanded='true'] .bars i:nth-child(2) {
+    opacity: 0;
+  }
+  .menu-btn[aria-expanded='true'] .bars i:nth-child(3) {
+    transform: translateY(-6px) rotate(-45deg);
+  }
+
+  /* The wonder list is hidden until the hamburger is tapped, then drops down as a list. */
+  .topbar .picker {
+    display: none;
+    flex-direction: column;
+    gap: 6px;
+    margin: 10px 0 0;
+    max-height: 60vh;
+    overflow-y: auto;
+  }
+
+  .topbar .picker.open {
+    display: flex;
+  }
+
+  .topbar .picker button {
+    width: 100%;
+    padding: 12px 16px;
+    border-radius: 12px;
+    text-align: left;
+  }
+
+  .app main {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: none;
+    height: auto;
+  }
+
+  .stage {
+    min-height: 460px;
+  }
+
+  .guide {
+    height: 640px;
+  }
+
+  .presenter {
+    height: 220px;
+  }
+}
+
